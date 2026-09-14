@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ticker Watch</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">📈</span>
+      <div>
+        <h1>Ticker Watch</h1>
+        <p class="subtitle">Real-time prices via Kafka &rarr; WebSockets</p>
+      </div>
+    </div>
+    <div class="status">
+      <span id="source-badge" class="badge" hidden></span>
+      <span id="conn" class="pill pill--connecting"><span class="dot"></span><span id="conn-text">Connecting…</span></span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel filter">
+      <div class="panel__head">
+        <h2>Companies</h2>
+        <span id="filter-count" class="muted"></span>
+      </div>
+      <input id="company-search" type="search" placeholder="Search symbol or name…" autocomplete="off">
+      <div class="filter__actions">
+        <button type="button" class="btn btn--ghost" id="select-all">All</button>
+        <button type="button" class="btn btn--ghost" id="select-none">None</button>
+      </div>
+      <ul id="company-list" class="company-list"></ul>
+    </aside>
+
+    <section class="prices">
+      <div class="prices__head">
+        <h2>Live prices</h2>
+        <label class="sort">Sort
+          <select id="sort">
+            <option value="symbol">Symbol</option>
+            <option value="change-desc">Top gainers</option>
+            <option value="change-asc">Top losers</option>
+          </select>
+        </label>
+      </div>
+      <div id="empty-prices" class="empty">Waiting for market data…</div>
+      <div id="price-grid" class="price-grid"></div>
+    </section>
+
+    <aside class="panel alerts">
+      <div class="panel__head">
+        <h2>Price alerts</h2>
+        <button type="button" id="enable-notifications" class="btn btn--ghost btn--small" hidden>Enable desktop alerts</button>
+      </div>
+
+      <form id="rule-form" class="rule-form" autocomplete="off">
+        <select id="rule-symbol" required aria-label="Company"></select>
+        <select id="rule-direction" aria-label="Direction">
+          <option value="above">rises above</option>
+          <option value="below">falls below</option>
+        </select>
+        <input id="rule-threshold" type="number" step="0.01" min="0.01" placeholder="Price" required aria-label="Threshold price">
+        <input id="rule-note" type="text" maxlength="140" placeholder="Note (optional)" aria-label="Note">
+        <button type="submit" class="btn btn--primary">Add alert</button>
+        <p id="rule-error" class="form-error" hidden></p>
+      </form>
+
+      <h3>Active rules <span id="rule-count" class="muted"></span></h3>
+      <ul id="rule-list" class="rule-list"></ul>
+
+      <h3>Triggered</h3>
+      <ul id="alert-feed" class="alert-feed"></ul>
+    </aside>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <template id="card-template">
+    <article class="card">
+      <div class="card__top">
+        <div>
+          <div class="card__symbol"></div>
+          <div class="card__name"></div>
+        </div>
+        <button type="button" class="icon-btn card__alert" title="Create an alert for this company">🔔</button>
+      </div>
+      <div class="card__price"></div>
+      <div class="card__change"></div>
+      <canvas class="card__spark" height="48"></canvas>
+      <dl class="card__stats">
+        <div><dt>Open</dt><dd class="stat-open"></dd></div>
+        <div><dt>High</dt><dd class="stat-high"></dd></div>
+        <div><dt>Low</dt><dd class="stat-low"></dd></div>
+        <div><dt>Vol</dt><dd class="stat-volume"></dd></div>
+      </dl>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
